@@ -5,10 +5,13 @@ import { Grid } from 'semantic-ui-react';
 import Navbar from './Navbar';
 
 class Homepage extends Component {
+
   render() {
+    const { state, username, loggedIn } = this.props.location;
+
     return (
-      <div className="App">
-        <Navbar/>
+      <div>
+        <Navbar username={username} routerState={state} loggedIn={loggedIn} />
         <Grid>
           <Grid.Row>
             <Grid.Column className='semantiCol' floated='right' width={3} textAlign='left'>

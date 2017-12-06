@@ -3,50 +3,52 @@ import logo from '../logo.svg';
 import '../assets/css/Browse.css';
 import  { Container, Image, Grid, 
           Input, Icon, Card, Dimmer,
-          Header, Button, Transition
+          Button, 
         } from 'semantic-ui-react';
 
+//Component declarations
 import Navbar from './Navbar';
-import bookImage from '../assets/images/books.jpg';
+import ModalDetails from './ModalDetails';
+
 
 class Browse extends Component {
-
-  constructor(){
-    super();
-    this.state = {
-      cardSelected: false,
-      active: false,
-      visible: false
-    };
-  }
-  handleShow = () => this.setState({ active: true })
-
-  handleHide = () => this.setState({ active: false })
-
-  handleRaisedShow = () => this.setState({ cardSelected: true })
-  handleRaisedHide = () => this.setState({ cardSelected: false })
-
+  //Init state
+  state = ({ active: false, open: false });
+  
+  //Functions used to show details button when hovering over book image.
+  showDim = () => this.setState({ active: true });
+  hideDim = () => this.setState({ active: false });
+  
+  //Functions used to show the modal, which shows the details of the book clicked.
+  showModal =  () => this.setState({ open: true });
+  closeModal = () => this.setState({ open: false })
+  
+  
   render() {
-    let cardSelected = this.state.cardSelected;
-    const { active, visible } = this.state;
+    //Active state is used for the card image onHover state. On Hover (active), the view details button will appear.
+    const { active } = this.state;
+    //Open state is passed to ModalDetails component, used to open the modal when user clives on card image details button.
+    const { open } = this.state
+    //This is the card content whenever hovering over the card image. Shows a button which triggers a modal. (ModalDetails.js)
     const content = (
       <div>
-        <Header as='h2' inverted>Title</Header>
-
-        <Button primary>Add</Button>
-        <Button>View</Button>
+        <Button inverted onClick={this.showModal} className="Browse-button-view">View Details</Button>
       </div>
     );
+    //Used to pass navbar states across components
+    const { state, username, loggedIn } = this.props.location;
 
     return (
-      <div className="App">
-        <Navbar routerState={this.props.location.state}/>
+      <div>
+        <Navbar username={username} routerState={state} loggedIn={loggedIn} />
         <Grid.Row >
           <Grid.Column className="Browse-imageHeader" width={16}>
             {this.props.location.state}
           </Grid.Column>
         </Grid.Row>
         <div className="Browse-arrow-div"><div className="Browse-arrow-up"></div></div>
+        
+        {/* Container to keep cards bounded. Limiting width. */}
         <Container>
           <Grid>
             <Grid.Row centered>
@@ -55,13 +57,12 @@ class Browse extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-          <Transition visible={visible} animation='scale' duration={500}>
-          <Image size='small' src={logo} />
-          </Transition>
+
+          {/* Beginning of book cards. Grabbed from database. */}
           <Card.Group itemsPerRow={4}>
-            <Card className="Browse-card" raised={this.state.cardSelected}>
-              <Dimmer.Dimmable as={Image} dimmed={active} dimmer={{ active, content }} onMouseEnter={this.handleShow}
-                onMouseLeave={this.handleHide} size='medium' src={logo}
+            <Card className="Browse-card">
+              <Dimmer.Dimmable as={Image} dimmed={active} dimmer={{ active, content }} onMouseEnter={this.showDim}
+                onMouseLeave={this.hideDim} size='medium' src={logo}
               />
               <Card.Content>
                 <Card.Header>Daniel</Card.Header>
@@ -77,6 +78,8 @@ class Browse extends Component {
             </Card>
           </Card.Group>
         </Container>
+        {/* Modal popup with individual book details. */}
+        <ModalDetails open={open} closeModal={this.closeModal} />
       </div>
     );
   }
