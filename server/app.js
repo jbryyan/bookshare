@@ -8,6 +8,9 @@ const cors = require('cors');
 const config = require('./config/main');
 const register = require('./controllers/register');
 const auth = require('./controllers/authenticate');
+const addBook = require('./controllers/addBook');
+const searchBook = require('./controllers/searchBook');
+const booksOwn = require('./controllers/booksOwn');
 const mongoose = require('mongoose');
 const passport = require('passport');
 
@@ -36,7 +39,7 @@ app.post('/api/authenticate', auth);
 
 //Authenticate token
 // Protect dashboard route with JWT
-app.get('/api/authToken', function(req, res, next){
+app.get('/api/tokenAuth', function(req, res, next){
   passport.authenticate('jwt', { session: false}, function(err, user, info){
     if (err) { return next(err); }
     if (!user) { return res.json({success: false, message: "Token is not valid."}); }
@@ -45,5 +48,15 @@ app.get('/api/authToken', function(req, res, next){
     res.json({ success: true, username: user.username, location: user.location });
   })(req, res, next);
 });
+
+//---------------------------------
+//Search for book using google API
+app.get('/api/searchBook', searchBook);
+
+//Add book to user in db.
+app.post('/api/addBook', addBook);
+
+//Grab user owned books list
+app.get('/api/booksOwn', booksOwn);
 
 module.exports = app;

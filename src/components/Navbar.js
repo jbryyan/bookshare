@@ -17,7 +17,8 @@ class Navbar extends Component {
     //Check to see if a token is stored in local storage. If there is a token, athenticate.
     if(localStorage.getItem('BookToken') && !this.props.loggedIn){
       console.log('A token exists');
-      let apiUrl = 'http://192.168.223.128:9000/api/authToken';
+      
+      let apiUrl = 'http://192.168.223.128:9000/api/tokenAuth';
       Request.get(apiUrl)
       .set('Authorization', localStorage.getItem('BookToken'))
       .then((res, err) => {
@@ -36,7 +37,7 @@ class Navbar extends Component {
           localStorage.removeItem('BookToken');
         }
       });
-
+      
     }
     
   }

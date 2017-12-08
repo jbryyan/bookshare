@@ -18,7 +18,9 @@ const UserSchema = new mongoose.Schema({
       type: String
     },
     books: [
-      { type: Object }
+      { _id: false,
+        bookData: { type: Object } 
+      }
     ]
 }, {collection: 'users' });
 

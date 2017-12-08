@@ -1,0 +1,45 @@
+.MyProfile-imageWrapper {
+  height:250px;
+  width: 200px;
+}
+
+.MyProfile-img{
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.MyProfile-card{
+  width: 200px !important;
+  height: 430px !important;
+  border-radius: 0 !important;
+}
+
+
+.MyProfile-cardHeader{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis !important;
+  margin-bottom: 10px;
+}
+
+.MyProfile-cardExtraContent{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.MyProfile-cardButton{
+  border-radius: 0 !important;
+  background-color: white !important;
+  color: black !important;
+}
+
+.MyProfile-cardButtonOwn{
+  border-radius: 0 !important;
+  background-color: #21BA45 !important;
+  color: white !important;
+}
+
+.MyProfile-cardButton:hover{
+  color: white !important;
+  background-color: #26AAE1 !important;
+}
