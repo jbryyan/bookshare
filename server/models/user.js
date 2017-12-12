@@ -18,7 +18,8 @@ const UserSchema = new mongoose.Schema({
       type: String
     },
     books: [
-      { _id: false,
+      {
+        _id: false,
         bookData: { type: Object } 
       }
     ]

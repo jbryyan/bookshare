@@ -5,8 +5,10 @@ import { Button, Container, Grid, Form } from 'semantic-ui-react'
 import Navbar from './Navbar';
 import Request from 'superagent';
 
+import  { Redirect } from 'react-router-dom'
+
 class Login extends Component {
-  state = { name: '', pwd: '', submittedName: '', submittedPwd: '' }
+  state = { name: '', pwd: '', submittedName: '', submittedPwd: '', login: false }
   
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
@@ -23,16 +25,23 @@ class Login extends Component {
       let dbRes = JSON.parse(res.text);
       if(dbRes.success){
         localStorage.setItem("BookToken", dbRes.message);
+        this.setState({ login: true });
       }
     });
   }
+  
+  updateLogin = () => {
+    this.setState({ login: true });
+  }
+  
 
   render() {
-    const { name, pwd, submittedName, submittedpwd } = this.state
+    const { name, pwd, submittedName, submittedpwd, login} = this.state
     const { state, username, loggedIn } = this.props.location;
     return (
       <div>
-        <Navbar username={username} routerState={state} loggedIn={loggedIn} />
+        { login && <Redirect to='/profile'/> }
+        <Navbar username={username} routerState={state} loggedIn={loggedIn} updateLogin={this.updateLogin} />
         <Grid.Row >
           <Grid.Column className="Browse-imageHeader" width={16}>
             {this.props.location.state}

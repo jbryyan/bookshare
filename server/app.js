@@ -10,6 +10,7 @@ const register = require('./controllers/register');
 const auth = require('./controllers/authenticate');
 const addBook = require('./controllers/addBook');
 const searchBook = require('./controllers/searchBook');
+const browseBooks = require('./controllers/browseBooks');
 const booksOwn = require('./controllers/booksOwn');
 const mongoose = require('mongoose');
 const passport = require('passport');
@@ -58,5 +59,8 @@ app.post('/api/addBook', addBook);
 
 //Grab user owned books list
 app.get('/api/booksOwn', booksOwn);
+
+//Grab book list
+app.get('/api/browseBooks', browseBooks);
 
 module.exports = app;

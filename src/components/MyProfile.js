@@ -14,14 +14,17 @@ import Navbar from './Navbar';
 import ProfileMenu from './ProfileMenu';
 import ProfileMenuMobile from './ProfileMenuMobile';
 import ModalDetails from './ModalDetails';
+import AddBook from './AddBook';
+import BooksOwn from './BooksOwn';
 import Request from 'superagent';
+import  { Redirect } from 'react-router-dom'
 
 class MyProfile extends Component {
   
   state = ({ 
     username: '', location: '', active: '', index: null, errorMsg: false,
     open: false, showSearch: true, search: '', bookData: null, booksOwn: [],
-    menu: 'Add'
+    menu: 'Add', redirectToLogin: false
   });
   
   updateUsername = (username, location) => this.setState({ username: username, location: location });
@@ -96,6 +99,8 @@ class MyProfile extends Component {
       console.log(dbResponse);
       if(dbResponse.success){
         this.setState({ booksOwn: dbResponse.message });
+      } else {
+        this.setState({ redirectToLogin: true });
       }
     });
   }
@@ -116,6 +121,9 @@ class MyProfile extends Component {
 
     return (
       <div>
+        { this.state.redirectToLogin && 
+          <Redirect to={{ pathname: '/login', state: 'login', loggedIn: false, username: ''  }}  />
+        }
         <Navbar username={username} routerState={state} loggedIn={loggedIn} updateUsername={this.updateUsername}/>
         <Grid>
         <Grid.Row >
@@ -153,89 +161,28 @@ class MyProfile extends Component {
             }
           </Grid>
           {/* Beginning of book cards. Grabbed from database. */}
-          { menu ==='Add' && <Card.Group>
-            { bookData && Object
-              .keys(bookData)
-              .map(key =>
-                <Card className='MyProfile-card' key={key}>
-                  <Dimmer.Dimmable height={10} as={Image} dimmed={active === key} onMouseEnter={() => this.showDim(key)} onMouseLeave={this.hideDim}>
-                    <Dimmer active={active === key}>
-                      <Button inverted onClick={() => this.showModal(key)} className="Browse-button-view">View Details</Button>
-                    </Dimmer>
-                    <div className='MyProfile-imageWrapper'>
-                      { typeof(bookData[key].volumeInfo.imageLinks) != 'undefined' ?
-                        <Image className='MyProfile-img' src={bookData[key].volumeInfo.imageLinks.thumbnail.replace('&zoom=1', '')} /> :
-                        <div></div>
-                      }
-                    </div>
-                  </Dimmer.Dimmable>
-                  <Card.Content>
-                    <Card.Header className='MyProfile-cardHeader'>{bookData[key].volumeInfo.title}</Card.Header>
-                    { typeof(bookData[key].volumeInfo.authors) != 'undefined' ? 
-                      <Card.Meta className='MyProfile-cardHeader'>Author: {bookData[key].volumeInfo.authors[0] } </Card.Meta> : 
-                      <Card.Meta>Author: </Card.Meta>  
-                    }
-                    <Card.Meta>Published: {bookData[key].volumeInfo.publishedDate}</Card.Meta>
-                    <Card.Meta>Pages: {bookData[key].volumeInfo.pageCount}</Card.Meta>
-                  </Card.Content>
-                  
-                  <Card.Content extra className='MyProfile-cardExtraContent'>
-                    { !bookData[key].userOwns ?
-                      <Button className='MyProfile-cardButton' fluid onClick={() => this.addBook(bookData[key], key)}>
-                        <Icon name='add' />
-                        Add to my books
-                      </Button> :
-                      <Button className='MyProfile-cardButtonOwn' fluid><Icon name='check'/>Book already owned</Button>
-                    }
-                  </Card.Content>
-                  
-                </Card>
-              )
-            }
-          </Card.Group>
+          { menu === 'Add' &&
+            <AddBook 
+              bookData={bookData} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook}
+              active={active}
+            />
           }
-          { menu ==='BooksOwn' && <Card.Group>
-          { booksOwn && Object
-            .keys(booksOwn)
-            .map(key =>
-              <Card className='MyProfile-card' key={key}>
-                <Dimmer.Dimmable height={10} as={Image} dimmed={active === key} onMouseEnter={() => this.showDim(key)} onMouseLeave={this.hideDim}>
-                  <Dimmer active={active === key}>
-                    <Button inverted onClick={() => this.showModal(key)} className="Browse-button-view">View Details</Button>
-                  </Dimmer>
-                  <div className='MyProfile-imageWrapper'>
-                    { typeof(booksOwn[key].bookData.imageLinks) != 'undefined' ?
-                      <Image className='MyProfile-img' src={booksOwn[key].bookData.imageLinks.thumbnail.replace('&zoom=1', '')} /> :
-                      <div></div>
-                    }
-                  </div>
-                </Dimmer.Dimmable>
-                <Card.Content>
-                  <Card.Header className='MyProfile-cardHeader'>{booksOwn[key].bookData.title}</Card.Header>
-                  { typeof(booksOwn[key].bookData.authors) != 'undefined' ? 
-                    <Card.Meta className='MyProfile-cardHeader'>Author: {booksOwn[key].bookData.authors[0] } </Card.Meta> : 
-                    <Card.Meta>Author: </Card.Meta>  
-                  }
-                  <Card.Meta>Published: {booksOwn[key].bookData.publishedDate}</Card.Meta>
-                  <Card.Meta>Pages: {booksOwn[key].bookData.pageCount}</Card.Meta>
-                </Card.Content>
-                
-                <Card.Content extra className='MyProfile-cardExtraContent'>
-                  <Button className='MyProfile-cardButton' fluid onClick={() => this.addBook(booksOwn[key], key)}>
-                    <Icon name='trash' />
-                    Remove from list
-                  </Button> 
-                </Card.Content>
-                
-              </Card>
-            )
+          { menu === 'BooksOwn' &&
+            <BooksOwn
+              booksOwn={booksOwn} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook}
+              active={active}
+            />
           }
-        </Card.Group>
-        }
         </Container>
         { this.state.bookData && this.state.index &&
           <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.bookData[this.state.index]} />
         }
+        { this.state.booksOwn && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} booksOwn={this.state.booksOwn[this.state.index].bookData} />
+        }
+        
       </div>
     );
   }

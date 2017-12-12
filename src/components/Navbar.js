@@ -30,6 +30,9 @@ class Navbar extends Component {
             loggedIn: true,
             username: dbRes.username
           });
+          if(this.props.updateLogin){
+            this.props.updateLogin();
+          }
           if(this.props.updateUsername){
             this.props.updateUsername(this.state.username, dbRes.location);
           }
@@ -49,7 +52,7 @@ class Navbar extends Component {
       <Menu fixed='top' className='Navbar-menu'>
         <Container>
           <Menu.Item as={Link} to={{ pathname: '/', state: 'home', loggedIn: loggedIn, username: username  }} 
-            header active={activeItem === 'home'}
+            className='Navbar-menuItem' header active={activeItem === 'home'}
           >
             BookShare
           </Menu.Item>

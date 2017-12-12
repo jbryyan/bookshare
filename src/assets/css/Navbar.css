@@ -1,3 +1,7 @@
 .Navbar-menu{
   margin: 0px !important;
 }
+
+.Navbar-menuItem{
+  float: 'right';
+}

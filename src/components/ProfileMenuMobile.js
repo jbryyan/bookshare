@@ -32,10 +32,10 @@ class ProfileMenuMobile extends Component {
                 <Statistic.Label>Wishlist</Statistic.Label>
               </Statistic>
             </Dropdown.Item>
-            <Dropdown.Item active={activeItem === 'Required'} name='Required' onClick={this.handleChange}>
+            <Dropdown.Item active={activeItem === 'Requests'} name='Requests' onClick={this.handleChange}>
               <Statistic size='mini'>
                 <Statistic.Value>0</Statistic.Value>
-                <Statistic.Label>Required</Statistic.Label>
+                <Statistic.Label>Requests</Statistic.Label>
               </Statistic>
             </Dropdown.Item>
             <Dropdown.Item active={activeItem === 'Given'} name='Given' onClick={this.handleChange}>

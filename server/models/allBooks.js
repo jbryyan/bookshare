@@ -2,16 +2,22 @@ const mongoose = require('mongoose');
 
 
 // User schema
-const BarSchema = new mongoose.Schema({
+const BookSchema = new mongoose.Schema({
 
-    books: [
-        { 
-            data: { type: Object },
-            usersOwnBook: { type: String }
-        }
+    bookId: { type: String },
+    bookData: { type: Object },
+    bookUsers: [
+      { _id: false,
+        username: { type: String } 
+      }
     ]
 }, {collection: 'books' });
 
-
-
-module.exports = mongoose.model('User', UserSchema);
+/*
+BookSchema.pre('save', function(next){
+  let user = this;
+  console.log("In prehook save");
+  return next();
+});
+*/
+module.exports = mongoose.model('Books', BookSchema);
