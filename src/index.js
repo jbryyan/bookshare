@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import './css/index.css';
 import 'semantic-ui-css/semantic.min.css';
 import Homepage from './components/Homepage';
@@ -14,7 +14,7 @@ import registerServiceWorker from './registerServiceWorker';
 
 const Root = () =>{
   return(
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
         <Route exact path='/' component={ Homepage } />
         <Route path='/browse' component={ Browse } />
@@ -23,7 +23,7 @@ const Root = () =>{
         <Route path='/signup' component={ Signup } />
         <Route path='/profile' component={ MyProfile } />
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
