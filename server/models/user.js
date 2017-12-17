@@ -20,7 +20,37 @@ const UserSchema = new mongoose.Schema({
     books: [
       {
         _id: false,
+        bookId: { type: String },
         bookData: { type: Object } 
+      }
+    ],
+    wishlist: [
+      {
+        _id: false,
+        bookId: { type: String },
+        bookData: { type: Object }
+      }
+    ],
+    requests: [
+      {
+        _id: false,
+        bookId: { type: String },
+        bookData: { type: Object },
+        userReq: { type: String }
+      }
+    ],
+    given: [
+      {
+        _id: false,
+        bookId: { type: String },
+        bookData: { type: Object }
+      }
+    ],
+    received: [
+      {
+        _id: false,
+        bookId: { type: String },
+        bookData: { type: Object }
       }
     ]
 }, {collection: 'users' });

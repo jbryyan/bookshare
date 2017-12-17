@@ -11,7 +11,9 @@ const auth = require('./controllers/authenticate');
 const addBook = require('./controllers/addBook');
 const searchBook = require('./controllers/searchBook');
 const browseBooks = require('./controllers/browseBooks');
+const addWishlist = require('./controllers/addWishlist');
 const booksOwn = require('./controllers/booksOwn');
+const acceptReq = require('./controllers/acceptReq');
 const mongoose = require('mongoose');
 const passport = require('passport');
 
@@ -62,5 +64,11 @@ app.get('/api/booksOwn', booksOwn);
 
 //Grab book list
 app.get('/api/browseBooks', browseBooks);
+
+//Add to wishlist
+app.post('/api/addWishlist', addWishlist);
+
+//Accept req
+app.post('/api/acceptReq', acceptReq);
 
 module.exports = app;

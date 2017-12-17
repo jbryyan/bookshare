@@ -10,14 +10,15 @@ const BookSchema = new mongoose.Schema({
       { _id: false,
         username: { type: String } 
       }
-    ]
+    ],
+    userOwns: { type: Boolean, default: false },
+    userWishlist: [
+      { 
+        _id: false,
+        username: { type: String } 
+      }
+    ], 
+    userInWishlist: { type: Boolean, default: false }
 }, {collection: 'books' });
 
-/*
-BookSchema.pre('save', function(next){
-  let user = this;
-  console.log("In prehook save");
-  return next();
-});
-*/
 module.exports = mongoose.model('Books', BookSchema);

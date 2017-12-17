@@ -16,15 +16,31 @@ module.exports = function(req, res){
     }else{
       Books.find({}, { '_id': 0 }, function(err, doc){
         if (err) throw err;
+
         let newBooks = [];
         doc.forEach((book, index) =>{
+          let owns = false;
           book.bookUsers.forEach((data) => {
-            console.log(data.username);
-            if(data.username !== user.username){
-              newBooks.push(book);
+            if(data.username === user.username){
+              book.userOwns = true;
+              owns = true;
+            }
+          });
+          if(!owns){
+            newBooks.push(book);
+          }
+        });
+        console.log(newBooks);
+
+        newBooks.forEach((book, index) => {
+          let inWishList = false;
+          book.userWishlist.forEach((wishlistData) => {
+            if (wishlistData.username === user.username){
+              newBooks[index].userInWishlist = true;
             }
           });
         });
+        
         res.json({ success: true, message: newBooks });
       });
     }

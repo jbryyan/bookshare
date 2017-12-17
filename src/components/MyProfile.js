@@ -16,6 +16,10 @@ import ProfileMenuMobile from './ProfileMenuMobile';
 import ModalDetails from './ModalDetails';
 import AddBook from './AddBook';
 import BooksOwn from './BooksOwn';
+import MyWishlist from './MyWishlist';
+import BooksRequests from './BooksRequests';
+import BooksGiven from './BooksGiven';
+import BooksReceived from './BooksReceived';
 import Request from 'superagent';
 import  { Redirect } from 'react-router-dom'
 
@@ -24,7 +28,7 @@ class MyProfile extends Component {
   state = ({ 
     username: '', location: '', active: '', index: null, errorMsg: false,
     open: false, showSearch: true, search: '', bookData: null, booksOwn: [],
-    menu: 'Add', redirectToLogin: false
+    menu: 'Add', redirectToLogin: false, myBookData: null
   });
   
   updateUsername = (username, location) => this.setState({ username: username, location: location });
@@ -78,15 +82,17 @@ class MyProfile extends Component {
       console.log(dbResponse);
       if(dbResponse.success){
         let newBookData = [...this.state.bookData];
-        newBookData[key].userOwns = true;
+        newBookData[key].userOwns = true; 
         this.setState({ bookData: newBookData, booksOwn: dbResponse.message });
       }
-      
     });
-    
   }
 
-  componentDidMount(){
+  updateState = (bookData) => {
+    this.setState({ myBookData: bookData });
+  }
+
+  componentWillMount(){
     if(this.props.location.username){
       this.setState({ username: this.props.location.username });      
     }
@@ -98,7 +104,7 @@ class MyProfile extends Component {
       let dbResponse = JSON.parse(res.text);
       console.log(dbResponse);
       if(dbResponse.success){
-        this.setState({ booksOwn: dbResponse.message });
+        this.setState({ booksOwn: dbResponse.message[0].books, myBookData: dbResponse.message });
       } else {
         this.setState({ redirectToLogin: true });
       }
@@ -107,7 +113,7 @@ class MyProfile extends Component {
 
   render() {
     let { state, username, loggedIn } = this.props.location;
-    let { search, bookData, errorMsg, matched, menu, booksOwn } = this.state;
+    let { search, bookData, errorMsg, matched, menu, booksOwn, myBookData } = this.state;
     //Active state is used for the card image onHover state. On Hover (active), the view details button will appear.
     const { active } = this.state;
     //Open state is passed to ModalDetails component, used to open the modal when user clives on card image details button.
@@ -140,7 +146,7 @@ class MyProfile extends Component {
           <Grid>
             <Grid.Row columns={1} only='tablet computer'>
               <Grid.Column>
-               <ProfileMenu handleChange={this.handleChange} booksOwn={booksOwn}/>
+               <ProfileMenu handleChange={this.handleChange} booksOwn={booksOwn} myBookData={myBookData}/>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row columns={1} only='mobile'>
@@ -175,12 +181,52 @@ class MyProfile extends Component {
               active={active}
             />
           }
+          { menu === 'Wishlist' &&
+            <MyWishlist
+              bookWishlist={this.state.myBookData[1].wishlist} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook}
+              active={active}
+            />
+          }
+          { menu === 'Requests' &&
+            <BooksRequests
+              bookReq={this.state.myBookData[2].requests} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook} updateState={this.updateState}
+              active={active} 
+            />
+          }
+          { menu === 'Given' && 
+            <BooksGiven
+              booksGiven={this.state.myBookData[3].given} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook} updateState={this.updateState}
+              active={active} 
+            />
+          }
+          { menu === 'Received' &&
+            <BooksReceived
+              booksReceived={this.state.myBookData[4].received} showDim={this.showDim} hideDim={this.hideDim}
+              showModal={this.showModal} addBook={this.addBook} updateState={this.updateState}
+              active={active} 
+            />
+          }
         </Container>
-        { this.state.bookData && this.state.index &&
-          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.bookData[this.state.index]} />
+        { this.state.menu === 'Add' && this.state.index &&
+          <ModalDetails open={open} addButton={true} closeModal={this.closeModal} bookData={this.state.bookData[this.state.index].volumeInfo} />
         }
-        { this.state.booksOwn && this.state.index &&
-          <ModalDetails open={open} closeModal={this.closeModal} booksOwn={this.state.booksOwn[this.state.index].bookData} />
+        { this.state.menu === 'BooksOwn' && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.booksOwn[this.state.index].bookData} />
+        }
+        { this.state.menu === 'Wishlist' && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.myBookData[1].wishlist[this.state.index].bookData} />
+        }
+        { this.state.menu === 'Requests' && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.myBookData[2].requests[this.state.index].bookData} />
+        }
+        { this.state.menu === 'Given' && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.myBookData[3].given[this.state.index].bookData} />
+        }
+        { this.state.menu === 'Received' && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.myBookData[4].received[this.state.index].bookData} />
         }
         
       </div>

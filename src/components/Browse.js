@@ -13,16 +13,18 @@ import Request from 'superagent';
 
 class Browse extends Component {
   //Init state
-  state = ({ active: false, open: false, activeTest: '', bookData: null });
+  state = ({ active: false, open: false, activeTest: '', bookData: null, index: null, loggedIn: false });
   
   //Functions used to show details button when hovering over book image.
-  showDim = (activeKey) => this.setState({ active: true, activeTest: activeKey });
+  showDim = (activeKey) => this.setState({ active: activeKey });
   hideDim = () => this.setState({ active: false });
   
   //Functions used to show the modal, which shows the details of the book clicked.
-  showModal =  () => this.setState({ open: true });
-  closeModal = () => this.setState({ open: false })
-  
+  showModal =  (key) => this.setState({ open: true, index: key });
+  closeModal = (link) => {
+    if(link) console.log('Open new tab');
+    this.setState({ open: false, index: null });
+  }
   componentWillMount(){
     console.log('Component did update');
     let apiUrl = 'http://192.168.223.128:9000/api/browseBooks';
@@ -35,6 +37,46 @@ class Browse extends Component {
     });
   }
 
+  componentDidMount(){
+    let apiUrl = 'http://192.168.223.128:9000/api/tokenAuth';
+    if(this.props.loggedIn){
+      this.setState({ loggedIn: true });
+    }
+    if(localStorage.getItem('BookToken') && !this.props.loggedIn){
+      Request.get(apiUrl)
+      .set('Authorization', localStorage.getItem('BookToken'))
+      .then((res, err) => {
+        if(err) throw (err);
+        console.log(res);
+        let dbRes = JSON.parse(res.text);
+        console.log(dbRes);
+        if (dbRes.success){
+          this.setState({ loggedIn: true });
+        }
+      });
+    };
+    
+  }
+
+  addWishlist = (bookData, index) => {
+    console.log(bookData);
+    let apiUrl = 'http://192.168.223.128:9000/api/addWishlist';
+    
+    Request.post(apiUrl)
+    .set('Authorization', localStorage.getItem('BookToken'))
+    .send({ data: bookData })
+    .then((res, err) => {
+      if(err) throw (err);
+      console.log(res);
+      let dbRes = JSON.parse(res.text);
+      if(dbRes.success){
+        let updatedBookData = [...this.state.bookData];
+        updatedBookData[index] = dbRes.message
+        this.setState({ bookData: updatedBookData });
+      }
+    });
+    
+  }
   render() {
     //Active state is used for the card image onHover state. On Hover (active), the view details button will appear.
     const { active } = this.state;
@@ -61,7 +103,7 @@ class Browse extends Component {
         <div className="Browse-arrow-div"><div className="Browse-arrow-up"></div></div>
         
         {/* Container to keep cards bounded. Limiting width. */}
-        <Container>
+        <Container algined='center'>
           <Grid>
             <Grid.Row centered>
               <Grid.Column className="Browse-input" width={6}>
@@ -77,10 +119,10 @@ class Browse extends Component {
           .keys(bookData)
           .map(key =>
             <Card className='MyProfile-card' key={key}>
-              <Dimmer.Dimmable height={10} as={Image} dimmed={this.active === key} 
+              <Dimmer.Dimmable height={10} as={Image} dimmed={active === key} 
                 onMouseEnter={() => this.showDim(key)} onMouseLeave={this.hideDim}
               >
-                <Dimmer active={this.active === key}>
+                <Dimmer active={active === key}>
                   <Button inverted onClick={() => this.showModal(key)} className="Browse-button-view">View Details</Button>
                 </Dimmer>
                 <div className='MyProfile-imageWrapper'>
@@ -101,10 +143,20 @@ class Browse extends Component {
               </Card.Content>
               
               <Card.Content extra className='MyProfile-cardExtraContent'>
-                <Button className='MyProfile-cardButton' fluid onClick={() => this.addBook(bookData[key], key)}>
-                  <Icon name='add' />
-                  Add to Wishlist
-                </Button> 
+                { this.state.loggedIn ? 
+                  ( this.state.bookData[key].userInWishlist ?
+                    <Button className='MyProfile-cardButton' fluid onClick={() => this.addWishlist(bookData[key])}>
+                      <Icon name='heart' />
+                      In my Wishlist
+                    </Button> 
+                    : <Button className='MyProfile-cardButton' fluid onClick={() => this.addWishlist(bookData[key], key)}>
+                        <Icon name='heart' />
+                        Add to Wishlist
+                      </Button>
+                  )
+                  :
+                  <Button className='MyProfile-cardButton' fluid><Icon name='check'/>Login & Add to Wishlist</Button>
+                }
               </Card.Content>
               
             </Card>
@@ -114,8 +166,10 @@ class Browse extends Component {
         </Container>
        
         {/* Modal popup with individual book details. */}
-        { /* <ModalDetails open={open} closeModal={this.closeModal} /> */}
-       {bookData && <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.bookData[this.state.index]} /> }
+        { this.state.bookData && this.state.index &&
+          <ModalDetails open={open} closeModal={this.closeModal} bookData={this.state.bookData[this.state.index]}/> 
+        }
+       
       </div>
     );
   }

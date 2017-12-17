@@ -48,7 +48,7 @@ module.exports = function(req, res){
     ); 
     User.findOneAndUpdate(
       { username: user.username },
-      { $push: { books: { bookData: bookData }}},
+      { $push: { books: { bookId: req.body.bookData.id, bookData: bookData }}},
       { new: true },
       function(err, doc){
         if (err) throw err;

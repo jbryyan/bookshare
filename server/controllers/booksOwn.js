@@ -12,7 +12,15 @@ module.exports = function(req, res){
       { username: user.username },
       function(err, doc){
         if (err) throw err;
-        res.json({ success: true, message: doc[0].books });
+        let myBookData = [];
+        let objectKey = ['books', 'wishlist', 'requests', 'given', 'received'];
+        //console.log(doc[0][objectKey[0]])
+        
+        for (i = 0; i < 5; i++){
+          myBookData.push({ [objectKey[i]]: doc[0][objectKey[i]] });
+        }
+        console.log(myBookData);
+        res.json({ success: true, message: myBookData });
       }
     ); 
   })(req, res);

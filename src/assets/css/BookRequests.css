@@ -1,0 +1,31 @@
+.BookReq-gridColLeft{
+ padding-right: 0 !important;
+}
+
+.BookReq-gridColRight{
+  padding-left: 0 !important;
+ }
+ 
+.BookReq-cardBtnL{
+  border-radius: 0 !important;
+  background-color: white !important;
+  outline: 1px solid grey !important;
+  color: green !important;
+}
+
+.BookReq-cardBtnL:hover{
+  color: white !important;
+  background-color: #26E16E !important; 
+}
+
+.BookReq-cardBtnR{
+  border-radius: 0 !important;
+  background-color: white !important;
+  outline: 1px solid grey !important;
+  color: red !important;
+}
+
+.BookReq-cardBtnR:hover{
+  color: white !important;
+  background-color: #E1265E !important; 
+}

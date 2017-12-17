@@ -25,6 +25,7 @@ class Navbar extends Component {
         if(err) throw (err);
         console.log(res);
         let dbRes = JSON.parse(res.text);
+        console.log(dbRes);
         if (dbRes.success){
           this.setState({
             loggedIn: true,
@@ -45,6 +46,9 @@ class Navbar extends Component {
     
   }
   
+  logout = () => {
+    localStorage.removeItem('BookToken');
+  }
   render() {
     let { activeItem, loggedIn, username } = this.state;
 
@@ -84,7 +88,10 @@ class Navbar extends Component {
             </Menu.Item>
           }
           { loggedIn &&
-            <Menu.Item> Logout </Menu.Item>
+            <Menu.Item as={Link} to={{ pathname: '/browse', state: 'browse', loggedIn: false, username: null }} 
+              onClick={this.logout}>
+             Logout 
+            </Menu.Item>
           }
 
         </Container>
